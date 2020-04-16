@@ -153,8 +153,10 @@ public class GameSP extends javax.swing.JFrame {
         cards.clear();
         jLayeredPane1.repaint();
         x /= 85;
-        UNO.os.println(x);
-        UNO.os.flush();
+        if (UNO.os != null) {
+            UNO.os.println(x);
+            UNO.os.flush();
+        } else UNO.out = Integer.toString(x);
     }//GEN-LAST:event_jLayeredPane1MousePressed
 
     class SPThread extends Thread {
@@ -173,8 +175,10 @@ public class GameSP extends javax.swing.JFrame {
             jLayeredPane2.add(jLabel5);
             while (isAlive()) {
                 try {
-                    do UNO.line = UNO.is.readLine();
-                    while (UNO.line == null);
+                    if (UNO.is != null)
+                        do UNO.line = UNO.is.readLine();
+                        while (UNO.line == null);
+                    else while (UNO.line == null) System.out.print("");
                     if (UNO.line.startsWith("MSG:DESC:"))
                         jLabel1.setText("\"" + UNO.line.replace("MSG:DESC:", "") + "\"");
                     else if (UNO.line.startsWith("MSG:NAME:")) UNO.names = UNO.line.replace("MSG:NAME:", "").split("-");
@@ -304,6 +308,7 @@ public class GameSP extends javax.swing.JFrame {
                             }
                         }
                     }
+                    if (UNO.is == null) UNO.line = null;
                 } catch (IOException exc) {
                     Logger.getLogger(GameSP.class.getName()).log(Level.SEVERE, null, exc);
                 }

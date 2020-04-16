@@ -112,8 +112,10 @@ public class GameCB extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        UNO.os.println(jComboBox1.getSelectedIndex());
-        UNO.os.flush();
+        if (UNO.os != null) {
+            UNO.os.println(jComboBox1.getSelectedIndex());
+            UNO.os.flush();
+        } else UNO.out = Integer.toString(jComboBox1.getSelectedIndex());
     }//GEN-LAST:event_jButton1ActionPerformed
     
     class CBThread extends Thread {
@@ -122,8 +124,10 @@ public class GameCB extends javax.swing.JFrame {
             jLabel2.setText(UNO.lang.getOrDefault("Scores", "Scores"));
             while (isAlive()) {
                 try {
-                    do UNO.line = UNO.is.readLine();
-                    while (UNO.line == null);
+                    if (UNO.is != null)
+                        do UNO.line = UNO.is.readLine();
+                        while (UNO.line == null);
+                    else while (UNO.line == null) System.out.print("");
                     if (UNO.line.startsWith("MSG:DESC:"))
                         jLabel3.setText("\"" + UNO.line.replace("MSG:DESC:", "") + "\"");
                     else if (UNO.line.startsWith("MSG:NAME:")) UNO.names = UNO.line.replace("MSG:NAME:", "").split("-");
@@ -187,6 +191,7 @@ public class GameCB extends javax.swing.JFrame {
                         jLabel4.setText(UNO.line.split("/")[0]);
                         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(UNO.line.split("/")[1].split("-")));
                     }
+                    if (UNO.is == null) UNO.line = null;
                 } catch (IOException exc) {
                     Logger.getLogger(GameCB.class.getName()).log(Level.SEVERE, null, exc);
                 }

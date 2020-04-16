@@ -11,8 +11,10 @@ public class GameTX {
     public static void main() {
         while (true)
             try {
-                do UNO.line = UNO.is.readLine();
-                while (UNO.line == null);
+                if (UNO.is != null)
+                    do UNO.line = UNO.is.readLine();
+                    while (UNO.line == null);
+                else while (UNO.line == null) System.out.print("");
                 if (UNO.line.startsWith("MSG:DESC:"))
                     System.out.println("\"" + UNO.line.replace("MSG:DESC:", "") + "\"");
                 else if (UNO.line.startsWith("MSG:NAME:")) UNO.names = UNO.line.replace("MSG:NAME:", "").split("-");
@@ -79,9 +81,12 @@ public class GameTX {
                         System.out.println(i + ": " + UNO.line.split("/")[1].split("-")[i]);
                     }
                     System.out.print(UNO.lang.getOrDefault("WaitForInput", "WaitForInput"));
-                    UNO.os.println(s.nextInt());
-                    UNO.os.flush();
+                    if (UNO.os != null){
+                        UNO.os.println(s.nextInt());
+                        UNO.os.flush();
+                    } else UNO.out = Integer.toString(s.nextInt());
                 }
+                if (UNO.is == null) UNO.line = null;
             } catch (IOException exc) {
                 Logger.getLogger(GameTX.class.getName()).log(Level.SEVERE, null, exc);
             }

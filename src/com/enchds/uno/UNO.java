@@ -19,6 +19,7 @@ public class UNO {
     static BufferedReader is = null;
     static PrintWriter os = null;
     static String line = null;
+    static String out = null;
     static final HashMap<String, String> lang = new HashMap<>();
     static String[] names;
     static String resName;
@@ -32,6 +33,7 @@ public class UNO {
     private static void printUsage() {
         System.err.println("Usage: java -jar UNO.JAR [flags]");
         System.err.println("Where legal flags are:");
+        System.err.println("-local yes\tPlay a local game");
         System.err.println("-nm\t\tName (default: ANONYMOUS)");
         System.err.println("-res\t\tResource pack (default: RESOURCE)");
         System.err.println("-lang\t\tLanguage name (default: RESOURCE)");
@@ -42,6 +44,7 @@ public class UNO {
         System.err.println("  -ui tx\t\tCommand line");
         System.err.println("-address\t Server address (default: localhost)");
         System.err.println("-port\t\t Server port (default: 19283)");
+        System.err.println("-local yes and -address are mutually exclusive.");
         System.err.println("You can also enter 'flags=…' into FLAGS.CFG.");
         System.err.println("Rightmore flags supersede leftmore flags.");
         System.err.println("In the same manner, command-line flags supersede FLAGS.CFG.");
@@ -70,6 +73,10 @@ public class UNO {
         for (int i = 0; i < allFlags.length; i++) {
             if (i % 2 == 1) printUsage();
             switch (allFlags[i]) {
+                case "-local":
+                    if (allFlags[i + 1].equalsIgnoreCase("yes")) argAddress = -2;
+                    i++;
+                    break;
                 case "-nm":
                     name = allFlags[i + 1];
                     i++;
@@ -130,31 +137,35 @@ public class UNO {
             });
             
         } catch (IOException exc) {}
-        InetAddress address = null;
-        try {
-            if (argAddress != -1) address = InetAddress.getByName(allFlags[argAddress]);
-            else address = InetAddress.getByName("localhost");
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(UNO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Socket s1 = null;
+        LocalServer.ServerGameThread t = new LocalServer().new ServerGameThread();
+        if (argAddress != -2) {
+            InetAddress address = null;
+            try {
+                if (argAddress != -1) address = InetAddress.getByName(allFlags[argAddress]);
+                else address = InetAddress.getByName("localhost");
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(UNO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Socket s1 = null;
+
+            try {
+                if (argPort != -1)
+                    try {
+                        s1 = new Socket(address, Integer.parseUnsignedInt(allFlags[argPort])); // You can use static final constant PORT_NUM
+                    } catch (NumberFormatException e) {
+                        printUsage();
+                    }
+                else s1 = new Socket(address, 19283);
+                is = new BufferedReader(new InputStreamReader(s1.getInputStream()));
+                os = new PrintWriter(s1.getOutputStream());
+                os.println(name);
+                os.flush();
+            } catch (IOException e) {
+                System.err.println(lang.getOrDefault("NoServer", "NoServer"));
+                System.exit(1);
+            }
+        } else t.start();
         
-        try {
-            if (argPort != -1)
-                try {
-                    s1 = new Socket(address, Integer.parseUnsignedInt(allFlags[argPort])); // You can use static final constant PORT_NUM
-                } catch (NumberFormatException e) {
-                    printUsage();
-                }
-            else s1 = new Socket(address, 19283);
-            is = new BufferedReader(new InputStreamReader(s1.getInputStream()));
-            os = new PrintWriter(s1.getOutputStream());
-            os.println(name);
-            os.flush();
-        } catch (IOException e) {
-            System.err.println(lang.getOrDefault("NoServer", "NoServer"));
-            System.exit(1);
-        }
         
         /* Create and display the form */
         switch (uiType) {
