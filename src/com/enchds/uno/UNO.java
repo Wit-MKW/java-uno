@@ -90,7 +90,7 @@ public class UNO {
                     i++;
                     break;
                 case "-ui":
-                    switch (args[i + 1]) {
+                    switch (allFlags[i + 1]) {
                         case "sp":
                             uiType = 0;
                             break;
