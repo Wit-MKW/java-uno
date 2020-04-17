@@ -182,7 +182,47 @@ public class GameSP extends javax.swing.JFrame {
                     if (UNO.line.startsWith("MSG:DESC:"))
                         jLabel1.setText("\"" + UNO.line.replace("MSG:DESC:", "") + "\"");
                     else if (UNO.line.startsWith("MSG:NAME:")) UNO.names = UNO.line.replace("MSG:NAME:", "").split("-");
-                    else if (UNO.line.startsWith("MSG:")) {
+                    else if (UNO.line.startsWith("MSG:HAND:")) {
+                        cards.forEach((JLabel card) -> {
+                            card.setText("");
+                        });
+                        jLayeredPane1.removeAll();
+                        cards.clear();
+                        jLayeredPane1.repaint();
+                        for (int i = 0; i < UNO.line.replace("MSG:HAND:", "").split("-").length; i++) {
+                            jLayeredPane1.setPreferredSize(new Dimension(Math.max(85 * i + 90,
+                                    (int) jScrollPane2.getSize().getWidth() + 1), 130));
+                            File res = null;
+                            if (UNO.line.replace("MSG:HAND:", "").split("-")[i].split(" ").length == 2) res = new File(new File("RESOURCE", 
+                                    UNO.line.replace("MSG:HAND:", "").split("-")[i].split(" ")[0].toUpperCase()),
+                                    UNO.line.replace("MSG:HAND:", "").split("-")[i].split(" ")[1].toUpperCase() + ".PNG");
+                            if (res != null && res.isFile()) {
+                                jLayeredPane1.setPreferredSize(new Dimension(Math.max(85 * i + 90,
+                                        (int) jScrollPane2.getSize().getWidth() + 1), 130));
+                                cards.add(0, new JLabel("<html><body><img src=\"" + res.toURI().toURL()
+                                        + "\" width=80 height=120 /></body></html>"));
+                                cards.get(0).setSize(80, 120);
+                                cards.get(0).setLocation(85 * i + 5, 5);
+                                cards.get(0).setOpaque(false);
+                            } else
+                            for (String split : UNO.line.replace("MSG:HAND:", "").split("-")[i].split(" ")) {
+                                try {
+                                    URL url = GameSP.class.getResource("/com/enchds/uno/resources/" + split + ".PNG");
+                                    res = new File("RESOURCE", split.toUpperCase() + ".PNG");
+                                    if (res.isFile())
+                                        url = res.toURI().toURL();
+                                    cards.add(0, new JLabel("<html><body><img src=\"" + url.toString()
+                                            + "\" width=80 height=120 /></body></html>"));
+                                    cards.get(0).setSize(80, 120);
+                                    cards.get(0).setLocation(85 * i + 5, 5);
+                                    cards.get(0).setOpaque(false);
+                                    jLayeredPane1.add(cards.get(0));
+                                } catch (NullPointerException exc) {
+                                    System.err.println(UNO.lang.getOrDefault("NullError", "NullError"));
+                                }
+                            }
+                        }
+                    } else if (UNO.line.startsWith("MSG:")) {
                         if (UNO.line.startsWith("MSG:NewPlayer")) {
                             UNO.line = UNO.lang.getOrDefault("NewPlayer", "NewPlayer")
                                     .replaceFirst("%1", Integer.toString(

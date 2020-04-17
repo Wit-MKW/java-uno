@@ -131,7 +131,12 @@ public class GameCB extends javax.swing.JFrame {
                     if (UNO.line.startsWith("MSG:DESC:"))
                         jLabel3.setText("\"" + UNO.line.replace("MSG:DESC:", "") + "\"");
                     else if (UNO.line.startsWith("MSG:NAME:")) UNO.names = UNO.line.replace("MSG:NAME:", "").split("-");
-                    else if (UNO.line.startsWith("MSG:")) {
+                    else if (UNO.line.startsWith("MSG:HAND")) {
+                        UNO.lang.entrySet().forEach((Entry<String, String> entry) -> {
+                            UNO.line = UNO.line.replace(entry.getKey(), entry.getValue());
+                        });
+                        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(UNO.line.replace("MSG:HAND:", "").split("-")));
+                    } else if (UNO.line.startsWith("MSG:")) {
                         if (UNO.line.startsWith("MSG:NewPlayer")) {
                             UNO.line = UNO.lang.getOrDefault("NewPlayer", "NewPlayer")
                                     .replaceFirst("%", Integer.toString(

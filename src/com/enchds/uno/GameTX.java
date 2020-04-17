@@ -27,11 +27,13 @@ public class GameTX {
                                 .replaceFirst("%", Integer.toString(
                                         Integer.parseInt(UNO.line.substring(UNO.line.length() - 2))))
                                 .substring(0, UNO.line.length() - 4);
+                        System.out.println(UNO.line);
                         continue;
                     } else if (UNO.line.startsWith("MSG:NextTurn")) {
                         UNO.line = UNO.lang.getOrDefault("NextTurn", "NextTurn")
                                 .replaceFirst("%", UNO.names[Integer.parseInt(UNO.line.substring(UNO.line.length() - 2))])
                                 .substring(0, UNO.line.length() - 2);
+                        System.out.println(UNO.line);
                         continue;
                     }
                     UNO.lang.entrySet().forEach((Map.Entry<String, String> entry) -> {

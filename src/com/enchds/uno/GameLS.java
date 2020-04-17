@@ -138,7 +138,18 @@ public class GameLS extends javax.swing.JFrame {
                     if (UNO.line.startsWith("MSG:DESC:"))
                         jLabel3.setText("\"" + UNO.line.replace("MSG:DESC:", "") + "\"");
                     else if (UNO.line.startsWith("MSG:NAME:")) UNO.names = UNO.line.replace("MSG:NAME:", "").split("-");
-                    else if (UNO.line.startsWith("MSG:")) {
+                    else if (UNO.line.startsWith("MSG:HAND:")) {
+                        UNO.lang.entrySet().forEach((Entry<String, String> entry) -> {
+                            UNO.line = UNO.line.replace(entry.getKey(), entry.getValue());
+                        });
+                        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+                            String[] strings = UNO.line.replace("MSG:HAND:", "").split("-");
+                            @Override
+                            public int getSize() { return strings.length; }
+                            @Override
+                            public String getElementAt(int i) { return strings[i]; }
+                        });
+                    } else if (UNO.line.startsWith("MSG:")) {
                         if (UNO.line.startsWith("MSG:NewPlayer")) {
                             UNO.line = UNO.lang.getOrDefault("NewPlayer", "NewPlayer")
                                     .replaceFirst("%", Integer.toString(
